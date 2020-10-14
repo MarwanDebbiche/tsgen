@@ -1,2 +1,3 @@
-# randomts
-Random Time Series Generator
+# tsgen
+
+Time Series Generator
