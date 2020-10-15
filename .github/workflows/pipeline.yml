@@ -41,6 +41,10 @@ jobs:
         run: |
           poetry run coverage run -m --source=tsgen pytest tests
           poetry run coverage report
+      - name: Coveralls
+        run: poetry run coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
   publish:
     needs: test
