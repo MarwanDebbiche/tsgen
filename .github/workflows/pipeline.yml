@@ -1,0 +1,62 @@
+# Github Action workflow for:
+#
+#   - static analysis (pylint)
+#   - type checking (mypy)
+#   - testing (pytest)
+#   - publishing to PyPi
+#
+
+name: CI/CD
+
+on:
+  push:
+  release:
+    types: [created]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run image
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.0.10
+      - name: Install dependencies
+        run: poetry install
+      - name: Pylint
+        run: |
+          poetry run pylint tsgen
+      - name: mypy
+        run: |
+          poetry run mypy -p tsgen
+      - name: Pytest
+        run: |
+          poetry run coverage run -m --source=tsgen pytest tests
+          poetry run coverage report
+
+  publish:
+    needs: test
+    if: github.event_name == 'release' && github.event.action == 'created'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: Run image
+        uses: abatilo/actions-poetry@v2.0.0
+        with:
+          poetry-version: 1.0.10
+      - name: Build and publish
+        env:
+          PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: poetry publish -u $PYPI_USERNAME -p $PYPI_PASSWORD --build
