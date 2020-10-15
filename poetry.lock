@@ -142,17 +142,6 @@ yaml = ["PyYAML (>=3.10)"]
 
 [[package]]
 category = "dev"
-description = "Type stubs for Python machine learning libraries"
-name = "data-science-types"
-optional = false
-python-versions = ">=3.6"
-version = "0.2.19"
-
-[package.extras]
-dev = ["black", "flake8", "flake8-pyi", "matplotlib", "mypy (0.770)", "numpy", "pandas", "pytest"]
-
-[[package]]
-category = "dev"
 description = "A backport of the dataclasses module for Python 3.6"
 marker = "python_version < \"3.7\""
 name = "dataclasses"
@@ -592,7 +581,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=3.5,<3.7.3 || >3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pytest-cov", "jaraco.test (>=3.2.0)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
 [metadata]
-content-hash = "e544deb29ff6e21ffb54429f1f8d11a36e081da37dda90f56afade4aa4625c09"
+content-hash = "29090a93c76d7799922b71b4373458edcfaaee1b4823b5a6f10d9e6e8ac70ecb"
 lock-version = "1.0"
 python-versions = "^3.6.1"
 
@@ -674,10 +663,6 @@ coverage = [
 coveralls = [
     {file = "coveralls-2.1.2-py2.py3-none-any.whl", hash = "sha256:b3b60c17b03a0dee61952a91aed6f131e0b2ac8bd5da909389c53137811409e1"},
     {file = "coveralls-2.1.2.tar.gz", hash = "sha256:4430b862baabb3cf090d36d84d331966615e4288d8a8c5957e0fd456d0dd8bd6"},
-]
-data-science-types = [
-    {file = "data-science-types-0.2.19.tar.gz", hash = "sha256:20ddbaaac3f3299e2091a64e74f78e64f4899f4ab5644bfd97e4694bd7b62ef4"},
-    {file = "data_science_types-0.2.19-py3-none-any.whl", hash = "sha256:86218af525896f84f3a39eef254449d795644311a64df78fba5eaf76aa610d6d"},
 ]
 dataclasses = [
     {file = "dataclasses-0.6-py3-none-any.whl", hash = "sha256:454a69d788c7fda44efd71e259be79577822f5e3f53f029a22d08004e951dc9f"},

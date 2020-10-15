@@ -8,14 +8,14 @@ with different trends.
 
 import math
 
-import numpy as np
-import pandas as pd
+import numpy as np  # type: ignore
+import pandas as pd  # type: ignore
 
 
 from tsgen.time_serie import TimeSerie
 
 
-def affine(start, end, freq, start_y, end_y):
+def affine(start, end, freq, start_y, end_y) -> TimeSerie:
     """
     Generate a linear TimeSerie.
     """
@@ -25,14 +25,14 @@ def affine(start, end, freq, start_y, end_y):
     )
 
 
-def constant(start, end, freq, value):
+def constant(start, end, freq, value) -> TimeSerie:
     """
     Generate a constant TimeSerie.
     """
     return affine(start, end, freq, value, value)
 
 
-def cosine(start, end, freq, amp=1, n_periods=1):
+def cosine(start, end, freq, amp=1, n_periods=1) -> TimeSerie:
     """
     Generate a cosine TimeSerie.
     """
@@ -44,7 +44,7 @@ def cosine(start, end, freq, amp=1, n_periods=1):
     )
 
 
-def sine(start, end, freq, n_periods=1):
+def sine(start, end, freq, n_periods=1) -> TimeSerie:
     """
     Generate a sine TimeSerie.
     """
@@ -57,7 +57,7 @@ def sine(start, end, freq, n_periods=1):
     )
 
 
-def randn(start, end, freq, mean=0, std=1):
+def randn(start, end, freq, mean=0, std=1) -> TimeSerie:
     """
     Generate a random normally distributed TimeSerie.
     """
