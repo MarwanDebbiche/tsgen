@@ -1,12 +1,26 @@
-import pytest
-import pandas as pd  # type: ignore
+import builtins
+
 import numpy as np  # type: ignore
-import matplotlib  # type: ignore
+import pandas as pd  # type: ignore
+import pytest
+
 from tsgen import TimeSerie
 
 
 # We accept 1e-10 errors
 TOLERANCE = 10
+
+
+@pytest.fixture
+def import_no_matplotlib(monkeypatch):
+    import_orig = builtins.__import__
+
+    def mocked_import(name, globals, locals, fromlist, level):
+        if name == "matplotlib":
+            raise ImportError()
+        return import_orig(name, locals, fromlist, level)
+
+    monkeypatch.setattr(builtins, "__import__", mocked_import)
 
 
 @pytest.fixture
@@ -84,10 +98,10 @@ def test_len(ts_monthly_1, ts_daily):
     assert len(ts_daily) == 367
 
 
-def test_plot(ts_monthly_1, ts_monthly_2):
-    axes = ts_monthly_1.plot()
-
-    assert isinstance(axes, matplotlib.axes.Axes)
+@pytest.mark.usefixtures("import_no_matplotlib")
+def test_plot(ts_monthly_1):
+    with pytest.raises(ImportError):
+        ts_monthly_1.plot()
 
 
 # Operators
@@ -235,3 +249,8 @@ def check_equal_value(left_value, right_value, tol=TOLERANCE):
     assert (pd.isna(left_value) and pd.isna(right_value)) or (
         abs(left_value - right_value) < 10 ** -tol
     )
+
+
+def test___check_indexes_match(ts_monthly_1):
+    with pytest.raises(RuntimeError):
+        ts_monthly_1._check_indexes_match(3)

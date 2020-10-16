@@ -188,12 +188,6 @@ class TimeSerie:
                 )
             )
 
-        if isinstance(other, TimeSerie):
-            self._check_indexes_match(other)
-            return TimeSerie(
-                index=self.index, y_values=(self.y_values ** other.y_values)
-            )
-
         return TimeSerie(index=self.index, y_values=(self.y_values ** other))
 
     def __rpow__(self, other: Any):
@@ -204,12 +198,6 @@ class TimeSerie:
                 "unsupported operand type(s) for **: '{}' and 'TimeSerie'".format(
                     type(other)
                 )
-            )
-
-        if isinstance(other, TimeSerie):
-            self._check_indexes_match(other)
-            return TimeSerie(
-                index=self.index, y_values=(other.y_values ** self.y_values)
             )
 
         return TimeSerie(index=self.index, y_values=(other ** self.y_values))
@@ -234,5 +222,8 @@ class TimeSerie:
                     type(other)
                 )
             )
-        if not (self.index == other.index).all():
+        if (
+            len(self.index) != len(other.index)
+            or (self.index != other.index).any()
+        ):
             raise ValueError("Indexes do not match")
