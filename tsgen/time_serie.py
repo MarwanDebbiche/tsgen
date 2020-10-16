@@ -73,9 +73,15 @@ class TimeSerie:
 
     def to_frame(self) -> pd.DataFrame:
         """
-        Convert the TimeSerie to a pandas DataFrame
+        Convert the TimeSerie to a pandas DataFrame.
         """
         return pd.DataFrame({"y_values": self.y_values}, index=self.index)
+
+    def to_series(self) -> pd.Series:
+        """
+        Convert the TimeSerie to a pandas Series.
+        """
+        return self.to_frame().y_values
 
     def plot(self):
         """

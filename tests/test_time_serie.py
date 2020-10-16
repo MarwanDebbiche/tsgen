@@ -62,6 +62,11 @@ def test_to_frame(ts_monthly_1):
     assert ts_monthly_1.to_frame().shape == (len(ts_monthly_1), 1)
 
 
+def test_to_series(ts_monthly_1):
+    assert isinstance(ts_monthly_1.to_series(), pd.Series)
+    assert ts_monthly_1.to_series().shape == (len(ts_monthly_1),)
+
+
 def test_print():
     start = "2020"
     end = "2021"
@@ -70,6 +75,7 @@ def test_print():
     y_values = [0]
     ts = TimeSerie(index, y_values)
     assert str(ts) == repr(ts)
+    assert str(ts) == str(ts.to_frame())
 
 
 def test_len(ts_monthly_1, ts_daily):
