@@ -13,7 +13,7 @@ class TimeSerie:
     index : pd.DatetimeIndex
         Time index.
 
-    y_values : collection
+    y_values : array_like
         One dimensional array_like object.
 
     Examples
