@@ -1,7 +1,5 @@
 """TimeSerie Object."""
 
-from __future__ import annotations
-
 from typing import Union, Any
 
 import pandas as pd  # type: ignore
@@ -104,64 +102,62 @@ class TimeSerie:
             self.y_values == other.y_values
         ).all()
 
-    def __mul__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+    def __mul__(self, other: Any):
         if not self._check_operator_input(other):
             raise TypeError(
                 "unsupported operand type(s) for *: 'TimeSerie' and '{}'".format(
                     type(other)
                 )
             )
-        if isinstance(other, TimeSerie):
-            self._check_indexes_match(other)
 
         if isinstance(other, TimeSerie):
+            self._check_indexes_match(other)
             return TimeSerie(
                 index=self.index, y_values=(self.y_values * other.y_values)
             )
 
         return TimeSerie(index=self.index, y_values=(self.y_values * other))
 
-    def __rmul__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+    def __rmul__(self, other: Any):
         return self.__mul__(other)
 
-    def __truediv__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+    def __truediv__(self, other: Any):
         if not isinstance(other, TimeSerie):
             return self * (1 / other)
 
-        inverse_other: TimeSerie = TimeSerie(
+        inverse_other = TimeSerie(
             index=self.index, y_values=(1 / other.y_values)
         )
 
         return self * inverse_other
 
-    def __rtruediv__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
-        inverse_self: TimeSerie = TimeSerie(
+    def __rtruediv__(self, other: Any):
+        inverse_self = TimeSerie(
             index=self.index, y_values=(1 / self.y_values)
         )
 
         return other * inverse_self
 
-    def __add__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+    def __add__(self, other: Any):
         if not self._check_operator_input(other):
             raise TypeError(
                 "unsupported operand type(s) for +: 'TimeSerie' and '{}'".format(
                     type(other)
                 )
             )
-        if isinstance(other, TimeSerie):
-            self._check_indexes_match(other)
 
         if isinstance(other, TimeSerie):
+            self._check_indexes_match(other)
             return TimeSerie(
                 index=self.index, y_values=(self.y_values + other.y_values)
             )
 
         return TimeSerie(index=self.index, y_values=(self.y_values + other))
 
-    def __radd__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+    def __radd__(self, other: Any):
         return self.__add__(other)
 
-    def __sub__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+    def __sub__(self, other: Any):
         if not isinstance(other, TimeSerie):
             return self + (-1 * other)
 
@@ -171,12 +167,12 @@ class TimeSerie:
 
         return self + negative_other
 
-    def __rsub__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+    def __rsub__(self, other: Any):
         negative_self: TimeSerie = -1 * self
 
         return negative_self + other
 
-    def __pow__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+    def __pow__(self, other: Any):
         if not self._check_operator_input(
             other, allowed_types=[int], time_serie_allowed=False
         ):
@@ -185,17 +181,16 @@ class TimeSerie:
                     type(other)
                 )
             )
-        if isinstance(other, TimeSerie):
-            self._check_indexes_match(other)
 
         if isinstance(other, TimeSerie):
+            self._check_indexes_match(other)
             return TimeSerie(
                 index=self.index, y_values=(self.y_values ** other.y_values)
             )
 
         return TimeSerie(index=self.index, y_values=(self.y_values ** other))
 
-    def __rpow__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+    def __rpow__(self, other: Any):
         if not self._check_operator_input(
             other, allowed_types=[int], time_serie_allowed=False
         ):
@@ -204,10 +199,9 @@ class TimeSerie:
                     type(other)
                 )
             )
-        if isinstance(other, TimeSerie):
-            self._check_indexes_match(other)
 
         if isinstance(other, TimeSerie):
+            self._check_indexes_match(other)
             return TimeSerie(
                 index=self.index, y_values=(other.y_values ** self.y_values)
             )
@@ -227,9 +221,12 @@ class TimeSerie:
 
         return False
 
-    def _check_indexes_match(self, other: TimeSerie) -> None:
-        if (
-            isinstance(other, TimeSerie)
-            and not (self.index == other.index).all()
-        ):
+    def _check_indexes_match(self, other: Any) -> None:
+        if not isinstance(other, TimeSerie):
+            raise RuntimeError(
+                "Got type '{}' for other. Expected TimeSerie".format(
+                    type(other)
+                )
+            )
+        if not (self.index == other.index).all():
             raise ValueError("Indexes do not match")
