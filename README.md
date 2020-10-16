@@ -18,6 +18,6 @@ pip install tsgen
 
 ## Getting started
 
-![Getting Started](./images/getting_started.png)
+![Getting Started](https://raw.githubusercontent.com/MarwanDebbiche/tsgen/master/images/getting_started.png)
 
-<!-- See the [documentation]() for more details. -->
+See the [documentation](https://tsgen.readthedocs.io/en/stable/index.html) for more details.
