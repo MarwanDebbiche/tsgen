@@ -1,7 +1,14 @@
 """TimeSerie Object."""
 
+from __future__ import annotations
+
+from typing import Union, Any
+
 import pandas as pd  # type: ignore
 import numpy as np  # type: ignore
+
+
+Numeric = Union[int, float]
 
 
 class TimeSerie:
@@ -56,15 +63,17 @@ class TimeSerie:
     2020-12-31       3.0
     """
 
-    def __init__(self, index, y_values):
+    def __init__(self, index: pd.DatetimeIndex, y_values):
         if not isinstance(index, pd.DatetimeIndex):
             raise TypeError("index should be a pandas.DatetimeIndex")
-        self.index = index
-        self.y_values = np.array(y_values)
+
+        self.index: pd.DatetimeIndex = index
+        self.y_values: np.ndarray = np.array(y_values)
+
         if len(index) != len(y_values):
             raise ValueError("index and y_values's shapes do not match")
 
-    def to_frame(self):
+    def to_frame(self) -> pd.DataFrame:
         """
         Convert the TimeSerie to a pandas DataFrame
         """
@@ -78,16 +87,16 @@ class TimeSerie:
         """
         return self.to_frame().y_values.plot()
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.index)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.to_frame())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, TimeSerie):
             return False
 
@@ -95,22 +104,15 @@ class TimeSerie:
             self.y_values == other.y_values
         ).all()
 
-    def __mul__(self, other):
-        if (
-            (not isinstance(other, TimeSerie))
-            and (not isinstance(other, int))
-            and (not isinstance(other, float))
-        ):
+    def __mul__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+        if not self._check_operator_input(other):
             raise TypeError(
                 "unsupported operand type(s) for *: 'TimeSerie' and '{}'".format(
                     type(other)
                 )
             )
-        if (
-            isinstance(other, TimeSerie)
-            and not (self.index == other.index).all()
-        ):
-            raise ValueError("Indexes do not match")
+        if isinstance(other, TimeSerie):
+            self._check_indexes_match(other)
 
         if isinstance(other, TimeSerie):
             return TimeSerie(
@@ -119,42 +121,35 @@ class TimeSerie:
 
         return TimeSerie(index=self.index, y_values=(self.y_values * other))
 
-    def __rmul__(self, other):
+    def __rmul__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
         return self.__mul__(other)
 
-    def __truediv__(self, other):
-        if isinstance(other, TimeSerie):
-            inverse_other = TimeSerie(
-                index=self.index, y_values=(1 / other.y_values)
-            )
-        else:
-            inverse_other = 1 / other
+    def __truediv__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+        if not isinstance(other, TimeSerie):
+            return self * (1 / other)
+
+        inverse_other: TimeSerie = TimeSerie(
+            index=self.index, y_values=(1 / other.y_values)
+        )
 
         return self * inverse_other
 
-    def __rtruediv__(self, other):
-        inverse_self = TimeSerie(
+    def __rtruediv__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+        inverse_self: TimeSerie = TimeSerie(
             index=self.index, y_values=(1 / self.y_values)
         )
 
         return other * inverse_self
 
-    def __add__(self, other):
-        if (
-            (not isinstance(other, TimeSerie))
-            and (not isinstance(other, int))
-            and (not isinstance(other, float))
-        ):
+    def __add__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+        if not self._check_operator_input(other):
             raise TypeError(
                 "unsupported operand type(s) for +: 'TimeSerie' and '{}'".format(
                     type(other)
                 )
             )
-        if (
-            isinstance(other, TimeSerie)
-            and not (self.index == other.index).all()
-        ):
-            raise ValueError("Indexes do not match")
+        if isinstance(other, TimeSerie):
+            self._check_indexes_match(other)
 
         if isinstance(other, TimeSerie):
             return TimeSerie(
@@ -163,20 +158,78 @@ class TimeSerie:
 
         return TimeSerie(index=self.index, y_values=(self.y_values + other))
 
-    def __radd__(self, other):
+    def __radd__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
         return self.__add__(other)
 
-    def __sub__(self, other):
-        if isinstance(other, TimeSerie):
-            negative_other = TimeSerie(
-                index=self.index, y_values=(-1 * other.y_values)
-            )
-        else:
-            negative_other = -1 * other
+    def __sub__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+        if not isinstance(other, TimeSerie):
+            return self + (-1 * other)
+
+        negative_other = TimeSerie(
+            index=self.index, y_values=(-1 * other.y_values)
+        )
 
         return self + negative_other
 
-    def __rsub__(self, other):
-        negative_self = -1 * self
+    def __rsub__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+        negative_self: TimeSerie = -1 * self
 
         return negative_self + other
+
+    def __pow__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+        if not self._check_operator_input(
+            other, allowed_types=[int], time_serie_allowed=False
+        ):
+            raise TypeError(
+                "unsupported operand type(s) for **: 'TimeSerie' and '{}'".format(
+                    type(other)
+                )
+            )
+        if isinstance(other, TimeSerie):
+            self._check_indexes_match(other)
+
+        if isinstance(other, TimeSerie):
+            return TimeSerie(
+                index=self.index, y_values=(self.y_values ** other.y_values)
+            )
+
+        return TimeSerie(index=self.index, y_values=(self.y_values ** other))
+
+    def __rpow__(self, other: Union[Numeric, TimeSerie]) -> TimeSerie:
+        if not self._check_operator_input(
+            other, allowed_types=[int], time_serie_allowed=False
+        ):
+            raise TypeError(
+                "unsupported operand type(s) for **: '{}' and 'TimeSerie'".format(
+                    type(other)
+                )
+            )
+        if isinstance(other, TimeSerie):
+            self._check_indexes_match(other)
+
+        if isinstance(other, TimeSerie):
+            return TimeSerie(
+                index=self.index, y_values=(other.y_values ** self.y_values)
+            )
+
+        return TimeSerie(index=self.index, y_values=(other ** self.y_values))
+
+    @staticmethod
+    def _check_operator_input(
+        input_: Any, allowed_types=(int, float), time_serie_allowed=True
+    ) -> bool:
+        for allowed_type in allowed_types:
+            if isinstance(input_, allowed_type):
+                return True
+
+        if time_serie_allowed and isinstance(input_, TimeSerie):
+            return True
+
+        return False
+
+    def _check_indexes_match(self, other: TimeSerie) -> None:
+        if (
+            isinstance(other, TimeSerie)
+            and not (self.index == other.index).all()
+        ):
+            raise ValueError("Indexes do not match")
