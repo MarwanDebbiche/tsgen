@@ -18,4 +18,4 @@ repos:
     rev: v0.790
     hooks:
       - id: mypy
-        exclude: ^(tests/)|^(docs/)
+        exclude: ^(docs/)

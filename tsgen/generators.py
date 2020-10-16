@@ -7,6 +7,7 @@ with different trends.
 """
 
 import math
+from typing import Union
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
@@ -14,8 +15,10 @@ import pandas as pd  # type: ignore
 
 from tsgen.time_serie import TimeSerie
 
+Numeric = Union[int, float]
 
-def affine(start, end, freq, start_y, end_y) -> TimeSerie:
+
+def affine(start, end, freq, start_y: Numeric, end_y: Numeric) -> TimeSerie:
     """
     Generate a linear TimeSerie.
     """
@@ -25,26 +28,32 @@ def affine(start, end, freq, start_y, end_y) -> TimeSerie:
     )
 
 
-def constant(start, end, freq, value) -> TimeSerie:
+def constant(start, end, freq, value: Numeric) -> TimeSerie:
     """
     Generate a constant TimeSerie.
     """
     return affine(start, end, freq, value, value)
 
 
-def cosine(start, end, freq, amp=1, n_periods=1) -> TimeSerie:
+def cosine(
+    start, end, freq, amp: Numeric = 1, n_periods: Numeric = 1
+) -> TimeSerie:
     """
     Generate a cosine TimeSerie.
     """
     index = pd.date_range(start=start, end=end, freq=freq)
     return TimeSerie(
         index=index,
-        y_values=amp
-        * np.cos(np.linspace(0, 2 * math.pi * n_periods, num=len(index))),
+        y_values=np.cos(
+            np.linspace(0, 2 * math.pi * n_periods, num=len(index))
+        )
+        * amp,
     )
 
 
-def sine(start, end, freq, n_periods=1) -> TimeSerie:
+def sine(
+    start, end, freq, amp: Numeric = 1, n_periods: Numeric = 1
+) -> TimeSerie:
     """
     Generate a sine TimeSerie.
     """
@@ -53,11 +62,12 @@ def sine(start, end, freq, n_periods=1) -> TimeSerie:
         index=index,
         y_values=np.sin(
             np.linspace(0, 2 * math.pi * n_periods, num=len(index))
-        ),
+        )
+        * amp,
     )
 
 
-def randn(start, end, freq, mean=0, std=1) -> TimeSerie:
+def randn(start, end, freq, mean: Numeric = 0, std: Numeric = 1) -> TimeSerie:
     """
     Generate a random normally distributed TimeSerie.
     """

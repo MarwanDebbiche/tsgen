@@ -2,6 +2,10 @@ from tsgen import TimeSerie
 from tsgen.generators import constant, affine, cosine, sine, randn
 
 
+# We accept 1e-10 errors
+TOLERANCE = 10
+
+
 def test_shape():
     start = "2020"
     end = "2021"
@@ -28,3 +32,46 @@ def test_constant():
     end = "2021"
     freq = "1M"
     assert (constant(start, end, freq, 1).y_values == 1).all()
+
+
+def test_cosine():
+    start = "2020"
+    end = "2021"
+    freq = "1M"
+    assert cosine(start, end, freq, n_periods=1).y_values[0] == 1
+    assert (
+        round(cosine(start, end, freq, n_periods=0.5).y_values[-1], TOLERANCE)
+        == -1
+    )
+    assert (
+        round(cosine(start, end, freq, n_periods=0.25).y_values[-1], TOLERANCE)
+        == 0
+    )
+
+
+def test_sine():
+    start = "2020"
+    end = "2021"
+    freq = "1M"
+    assert sine(start, end, freq, n_periods=1).y_values[0] == 0
+    assert (
+        round(sine(start, end, freq, n_periods=0.5).y_values[-1], TOLERANCE)
+        == 0
+    )
+    assert (
+        round(sine(start, end, freq, n_periods=0.25).y_values[-1], TOLERANCE)
+        == 1
+    )
+
+
+def test_randn():
+    start = "2020"
+    end = "2021"
+    freq = "1min"
+    mean = 3
+    std = 10
+    assert randn(start, end, freq, mean=mean).y_values.mean().round() == mean
+    assert (
+        randn(start, end, freq, mean=mean, std=std).y_values.std().round()
+        == std
+    )

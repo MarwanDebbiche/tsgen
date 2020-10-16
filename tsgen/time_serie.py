@@ -61,7 +61,7 @@ class TimeSerie:
             raise TypeError("index should be a pandas.DatetimeIndex")
         self.index = index
         self.y_values = np.array(y_values)
-        if len(y_values) != len(y_values):
+        if len(index) != len(y_values):
             raise ValueError("index and y_values's shapes do not match")
 
     def to_frame(self):
@@ -76,7 +76,7 @@ class TimeSerie:
         `pd.Series.plot function
         <https://pandas.pydata.org/docs/reference/api/pandas.Series.plot.html>`_.
         """
-        self.to_frame().y_values.plot()
+        return self.to_frame().y_values.plot()
 
     def __len__(self):
         return len(self.index)
@@ -101,7 +101,11 @@ class TimeSerie:
             and (not isinstance(other, int))
             and (not isinstance(other, float))
         ):
-            raise TypeError("Wrong y_values")
+            raise TypeError(
+                "unsupported operand type(s) for *: 'TimeSerie' and '{}'".format(
+                    type(other)
+                )
+            )
         if (
             isinstance(other, TimeSerie)
             and not (self.index == other.index).all()
@@ -115,13 +119,37 @@ class TimeSerie:
 
         return TimeSerie(index=self.index, y_values=(self.y_values * other))
 
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __truediv__(self, other):
+        if isinstance(other, TimeSerie):
+            inverse_other = TimeSerie(
+                index=self.index, y_values=(1 / other.y_values)
+            )
+        else:
+            inverse_other = 1 / other
+
+        return self * inverse_other
+
+    def __rtruediv__(self, other):
+        inverse_self = TimeSerie(
+            index=self.index, y_values=(1 / self.y_values)
+        )
+
+        return other * inverse_self
+
     def __add__(self, other):
         if (
             (not isinstance(other, TimeSerie))
             and (not isinstance(other, int))
             and (not isinstance(other, float))
         ):
-            raise TypeError("Wrong y_values")
+            raise TypeError(
+                "unsupported operand type(s) for +: 'TimeSerie' and '{}'".format(
+                    type(other)
+                )
+            )
         if (
             isinstance(other, TimeSerie)
             and not (self.index == other.index).all()
@@ -147,3 +175,8 @@ class TimeSerie:
             negative_other = -1 * other
 
         return self + negative_other
+
+    def __rsub__(self, other):
+        negative_self = -1 * self
+
+        return negative_self + other
