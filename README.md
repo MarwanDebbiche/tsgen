@@ -6,7 +6,7 @@
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/tsgen?label=pypi%20downloads)](https://pypi.org/project/tsgen/)
 ![License](https://img.shields.io/github/license/MarwanDebbiche/tsgen)
 
-tsgen (for Time Series Generator) is a package developed for educational purposes that helps create unidimensional time series of different shapes.
+tsgen (for Time Series Generator) is a package developed [for educational purposes](https://medium.com/@marwan.debbiche/a-modern-set-up-for-python-package-development-f60b27a26bd7) that helps create unidimensional time series of different shapes.
 
 ## Installation
 

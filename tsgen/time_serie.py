@@ -29,7 +29,6 @@ class TimeSerie:
     ...     index=index,
     ...     y_values=np.linspace(1, 1, len(index))
     ... )
-
     >>> ts
                 y_values
     2020-01-31  0.000000
@@ -44,7 +43,6 @@ class TimeSerie:
     2020-10-31  0.818182
     2020-11-30  0.909091
     2020-12-31  1.000000
-
     >>> ts + 3 - ts
                 y_values
     2020-01-31       3.0
@@ -89,7 +87,7 @@ class TimeSerie:
         `pd.Series.plot function
         <https://pandas.pydata.org/docs/reference/api/pandas.Series.plot.html>`_.
         """
-        return self.to_frame().y_values.plot()
+        return self.to_series().plot()
 
     def __len__(self) -> int:
         return len(self.index)
